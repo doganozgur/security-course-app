@@ -1,0 +1,66 @@
+import { Flashcard } from '../types';
+
+export const MOCK_FLASHCARDS: Flashcard[] = [
+  {
+    id: 'fc-1',
+    topic: 'hukuk',
+    topicTitle: 'Özel Güvenlik Hukuku',
+    frontText: 'ÖGG hangi durumda arama yaparken hakim kararı veya savcı emrine ihtiyaç duymaz?',
+    backText: 'Özel güvenlik görevlileri; görev alanında ve görev süresince, hava meydanları, limanlar, gar, istasyon ve spor müsabakalarında, kişilerin üstlerini ve eşyalarını X-Ray, el dedektörü ve kapı detektörleri gibi TEKNİK CİHAZLARLA arayabilir.',
+    importantNote: 'Elle fiziki arama sadece suçüstü halinde veya yakalama anında kaba üst araması (silah/kesici alet kontrolü) şeklinde yapılabilir.',
+    lawReference: '5188 Sayılı Kanun Madde 7',
+  },
+  {
+    id: 'fc-2',
+    topic: 'hukuk',
+    topicTitle: 'Özel Güvenlik Hukuku',
+    frontText: 'Özel Güvenlik Kimlik Kartının geçerlilik süresi kaç yıldır?',
+    backText: 'Özel güvenlik kimlik kartı ve çalışma izni 5 YIL geçerlidir. 5 yılın sonunda kimliğin yenilenmesi için yenileme eğitimi alınması ve harcın yatırılması gerekir.',
+    lawReference: '5188 Sayılı Kanun Madde 11',
+  },
+  {
+    id: 'fc-3',
+    topic: 'guvenlik_tedbirleri',
+    topicTitle: 'Güvenlik Tedbirleri',
+    frontText: 'Devriye yöntemleri nelerdir?',
+    backText: '1. Olağan (Rutin) Devriye\n2. Dairesel Devriye\n3. Geri Dönüşlü Devriye\n4. Planlı Devriye\n5. Rastgele (Serbest) Devriye',
+    importantNote: 'Suçluların devriye saatini kestirememesi için en caydırıcı devriye yöntemi Rastgele (Serbest) ve Geri Dönüşlü devriyedir.',
+  },
+  {
+    id: 'fc-4',
+    topic: 'yangin',
+    topicTitle: 'Yangın Güvenliği',
+    frontText: 'LPG ve Doğalgaz yangınları hangi sınıftır ve ilk müdahale kuralı nedir?',
+    backText: 'C Sınıfı (Gaz Yangınları) grubuna girer. Gaz yangınlarında ilk ve en hayati kural: Önce gaz vanası/kaynağı kesilmeli, ardından kuru kimyevi tozla (KKT) müdahale edilmelidir. Gaz kesilmeden alev söndürülürse ortam patlamaya hazır bomba haline gelir!',
+  },
+  {
+    id: 'fc-5',
+    topic: 'ilk_yardim',
+    topicTitle: 'Temel İlk Yardım',
+    frontText: 'Koma Pozisyonu (Yarı Yüzükoyun Yan Pozisyon) hangi durumlarda verilir?',
+    backText: 'Bilinç KAPALI fakat solunum ve nabız VAR ise verilir. Amaç: Dilin geriye kaçarak soluk borusunu tıkamasını ve kusmuk aspirasyonunu önlemektir.',
+    importantNote: 'Omurga travması veya boyun kırığı şüphesi varsa hasta kesinlikle döndürülmez.',
+  },
+  {
+    id: 'fc-6',
+    topic: 'cihazlar',
+    topicTitle: 'Güvenlik Sistemleri',
+    frontText: 'X-Ray cihazında renk kodları ne anlama gelir?',
+    backText: '🟠 TURUNCU/KAHVERENGİ: Organik Maddeler (Patlayıcı, Plastik, Uyuşturucu, Kağıt, Gıda)\n🔵 MAVİ/KOYU MAVİ: Ağır İnorganik Metaller (Çelik, Demir, Silah, Bıçak)\n🟢 YEŞİL: Karışık & Hafif Metaller (Alüminyum, Cam, Porselen)\n⬛ SİYAH: Işının geçemediği çok yoğun kurşun veya kalın kütle',
+  },
+  {
+    id: 'fc-7',
+    topic: 'silah_bilgisi',
+    topicTitle: 'Silah Bilgisi',
+    frontText: 'İlk dolduruşta fişeği şarjörden alıp fişek yatağına süren parça hangisidir?',
+    backText: 'SÜRGÜ (KAPAK TAKIMI) ve İcra Yayı mekanizmasıdır. Sürgü geriye çekilip bırakıldığında, şarjörün en üstündeki fişeği fişek yatağına iter.',
+  },
+  {
+    id: 'fc-8',
+    topic: 'silah_bilgisi',
+    topicTitle: 'Silah Bilgisi',
+    frontText: 'Doğru nişan hattı nasıl oluşturulur?',
+    backText: 'Göz - Gezin Ortası - Arpacığın Tepesi - Hedefin Vuruş Noktası.\n\nKritik Kural: Net görülmesi gereken tek nokta ARPACIK\'tır. Gez ve hedef flu (bulanık) görülmelidir.',
+    importantNote: 'Sınavlarda en çok sorulan silah kuralıdır!',
+  },
+];
