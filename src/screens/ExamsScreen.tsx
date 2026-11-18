@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,8 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import { colors, spacing } from '../theme/colors';
+import { spacing, ThemeColors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { EXAM_PERIODS } from '../data/mockExams';
 import { ExamPeriod } from '../types';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,6 +20,8 @@ interface ExamsScreenProps {
 
 export const ExamsScreen: React.FC<ExamsScreenProps> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [filter, setFilter] = useState<'all' | 'free' | 'weapon'>('all');
 
   const filteredExams = EXAM_PERIODS.filter((exam) => {
@@ -127,8 +130,8 @@ export const ExamsScreen: React.FC<ExamsScreenProps> = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={[styles.topBar, { paddingTop: Math.max(insets.top, 24) + 18 }]}>
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+      <View style={[styles.topBar, { paddingTop: insets.top + spacing.md }]}>
         <View style={styles.headerTitleRow}>
           <TouchableOpacity
             style={styles.backButton}
@@ -200,7 +203,8 @@ export const ExamsScreen: React.FC<ExamsScreenProps> = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -208,7 +212,7 @@ const styles = StyleSheet.create({
   topBar: {
     backgroundColor: colors.card,
     paddingHorizontal: spacing.md,
-    paddingBottom: spacing.sm,
+    paddingBottom: spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
@@ -221,7 +225,7 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
     paddingVertical: 6,
     paddingHorizontal: 12,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceMuted,
     borderRadius: 18,
     flexDirection: 'row',
     alignItems: 'center',
@@ -285,8 +289,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   premiumCard: {
-    backgroundColor: '#FBFDFF',
-    borderColor: '#E2E8F0',
+    backgroundColor: colors.card,
+    borderColor: colors.border,
   },
   cardHeader: {
     flexDirection: 'row',

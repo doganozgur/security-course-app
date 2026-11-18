@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   StatusBar,
 } from 'react-native';
-import { colors, spacing } from '../theme/colors';
+import { spacing, ThemeColors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { StorageService, UserStatistics } from '../utils/storage';
 import { EXAM_PERIODS } from '../data/mockExams';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,6 +19,8 @@ interface HomeScreenProps {
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
+  const { colors, isDark, toggleTheme } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [stats, setStats] = useState<UserStatistics>({
     totalSolvedQuestions: 0,
     totalCorrect: 0,
@@ -48,18 +51,28 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const latestExam = EXAM_PERIODS[0];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
       <StatusBar barStyle="light-content" />
       
       {/* Header */}
-      <View style={[styles.header, { paddingTop: Math.max(insets.top, 24) + 18 }]}>
+      <View style={[styles.header, { paddingTop: insets.top + spacing.md }]}>
         <View>
           <Text style={styles.headerSubtitle}>ÖZEL GÜVENLİK SINAVINA HAZIRLIK</Text>
           <Text style={styles.headerTitle}>Geleceğin Güvenliği</Text>
         </View>
-        <View style={styles.streakBadge}>
-          <Text style={styles.streakFire}>🔥</Text>
-          <Text style={styles.streakText}>{stats.streakDays} Gün</Text>
+        <View style={styles.headerActions}>
+          <TouchableOpacity
+            style={styles.themeToggleButton}
+            onPress={toggleTheme}
+            activeOpacity={0.75}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Text style={styles.themeToggleText}>{isDark ? '☀️' : '🌙'}</Text>
+          </TouchableOpacity>
+          <View style={styles.streakBadge}>
+            <Text style={styles.streakFire}>🔥</Text>
+            <Text style={styles.streakText}>{stats.streakDays} Gün</Text>
+          </View>
         </View>
       </View>
 
@@ -207,7 +220,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -219,6 +233,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  themeToggleButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.18)',
+  },
+  themeToggleText: {
+    fontSize: 16,
   },
   headerSubtitle: {
     color: colors.secondary,
@@ -253,10 +285,10 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: spacing.md,
-    paddingBottom: spacing.xxl,
+    paddingBottom: spacing.xl,
   },
   countdownCard: {
-    backgroundColor: colors.primary,
+    backgroundColor: '#1E3A8A',
     borderRadius: 16,
     padding: spacing.md,
     marginBottom: spacing.md,
@@ -284,7 +316,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   countdownDate: {
-    color: colors.secondaryLight,
+    color: '#FEF3C7',
     fontSize: 12,
     fontWeight: '600',
   },
@@ -323,7 +355,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   sectionHeader: {
-    marginVertical: spacing.sm,
+    marginBottom: spacing.sm,
   },
   sectionTitle: {
     fontSize: 16,
@@ -390,14 +422,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    rowGap: spacing.md,
     marginBottom: spacing.md,
   },
   gridCard: {
-    width: '48%',
+    width: '48.8%',
     backgroundColor: colors.card,
     borderRadius: 14,
     padding: spacing.md,
-    marginBottom: spacing.sm + 4,
     borderWidth: 1,
     borderColor: colors.border,
     borderLeftWidth: 5,
@@ -471,10 +503,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.border,
   },
   disclaimerBox: {
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceMuted,
     borderRadius: 10,
-    padding: spacing.sm + 2,
-    marginTop: spacing.xs,
+    padding: spacing.md,
   },
   disclaimerText: {
     fontSize: 11,

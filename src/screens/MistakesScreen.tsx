@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   Alert,
   Platform,
 } from 'react-native';
-import { colors, spacing } from '../theme/colors';
+import { spacing, ThemeColors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { Question } from '../types';
 import { StorageService } from '../utils/storage';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface MistakesScreenProps {
   navigation: any;
@@ -20,6 +20,8 @@ interface MistakesScreenProps {
 
 export const MistakesScreen: React.FC<MistakesScreenProps> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [wrongQuestions, setWrongQuestions] = useState<Question[]>([]);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, 'A' | 'B' | 'C' | 'D' | 'E'>>({});
   const [revealedIds, setRevealedIds] = useState<Set<string>>(new Set());
@@ -73,8 +75,8 @@ export const MistakesScreen: React.FC<MistakesScreenProps> = ({ navigation }) =>
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={[styles.topHeader, { paddingTop: Math.max(insets.top, 24) + 18 }]}>
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+      <View style={[styles.topHeader, { paddingTop: insets.top + spacing.md }]}>
         <View style={styles.headerTitleRow}>
           <TouchableOpacity
             onPress={() => {
@@ -173,14 +175,15 @@ export const MistakesScreen: React.FC<MistakesScreenProps> = ({ navigation }) =>
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
   },
   topHeader: {
     backgroundColor: colors.card,
-    paddingBottom: spacing.sm + 4,
+    paddingBottom: spacing.md,
     paddingHorizontal: spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
@@ -193,7 +196,7 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
     paddingVertical: 6,
     paddingHorizontal: 12,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceMuted,
     borderRadius: 18,
     flexDirection: 'row',
     alignItems: 'center',
@@ -260,17 +263,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     borderRadius: 8,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.surfaceSubtle,
     borderWidth: 1,
     borderColor: colors.border,
     marginBottom: 6,
   },
   optCorrect: {
-    backgroundColor: '#ECFDF5',
+    backgroundColor: colors.successSurface,
     borderColor: colors.accent,
   },
   optWrong: {
-    backgroundColor: '#FEF2F2',
+    backgroundColor: colors.dangerSurface,
     borderColor: colors.danger,
   },
   optKeyText: {
@@ -285,7 +288,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   explanationBox: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.surfaceHighlight,
     padding: spacing.sm + 4,
     borderRadius: 8,
     borderLeftWidth: 3,

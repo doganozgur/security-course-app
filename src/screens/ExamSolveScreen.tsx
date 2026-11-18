@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,8 @@ import {
   Modal,
   Platform,
 } from 'react-native';
-import { colors, spacing } from '../theme/colors';
+import { spacing, ThemeColors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { MOCK_QUESTIONS, EXAM_PERIODS } from '../data/mockExams';
 import { Question, UserExamAttempt } from '../types';
 import { StorageService } from '../utils/storage';
@@ -25,6 +26,8 @@ export const ExamSolveScreen: React.FC<ExamSolveScreenProps> = ({
   navigation,
 }) => {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { examId = 'ogg-105', mode = 'real' } = route.params || {};
 
   const examInfo = EXAM_PERIODS.find((e) => e.id === examId) || EXAM_PERIODS[0];
@@ -197,9 +200,9 @@ export const ExamSolveScreen: React.FC<ExamSolveScreenProps> = ({
   const selectedAnswer = userAnswers[currentQuestion.id];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
       {/* Top Bar */}
-      <View style={[styles.topBar, { paddingTop: Math.max(insets.top, 24) + 18 }]}>
+      <View style={[styles.topBar, { paddingTop: insets.top + spacing.sm + 4 }]}>
         <TouchableOpacity
           onPress={handleExit}
           style={styles.exitButton}
@@ -428,7 +431,8 @@ export const ExamSolveScreen: React.FC<ExamSolveScreenProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -446,7 +450,7 @@ const styles = StyleSheet.create({
   exitButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceMuted,
     paddingHorizontal: 12,
     paddingVertical: 7,
     borderRadius: 18,
@@ -459,7 +463,7 @@ const styles = StyleSheet.create({
   timerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceMuted,
     paddingHorizontal: spacing.md,
     paddingVertical: 5,
     borderRadius: 20,
@@ -509,10 +513,10 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 6,
     marginRight: spacing.sm,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.surfaceSubtle,
   },
   flagButtonActive: {
-    backgroundColor: '#FEF3C7',
+    backgroundColor: colors.secondaryLight,
   },
   flagIcon: {
     fontSize: 11,
@@ -574,21 +578,21 @@ const styles = StyleSheet.create({
   },
   optionSelected: {
     borderColor: colors.primary,
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.surfaceHighlight,
   },
   optionCorrect: {
     borderColor: colors.accent,
-    backgroundColor: '#ECFDF5',
+    backgroundColor: colors.successSurface,
   },
   optionWrong: {
     borderColor: colors.danger,
-    backgroundColor: '#FEF2F2',
+    backgroundColor: colors.dangerSurface,
   },
   optionKeyCircle: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.sm + 2,
@@ -615,7 +619,7 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
   explanationBox: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.surfaceHighlight,
     padding: spacing.md,
     borderRadius: 12,
     borderLeftWidth: 4,
@@ -648,7 +652,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceMuted,
     marginRight: spacing.sm,
   },
   navButtonDisabled: {
@@ -717,7 +721,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     margin: 5,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.card,
     position: 'relative',
   },
   gridNumBoxAnswered: {

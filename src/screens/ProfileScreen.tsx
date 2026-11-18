@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   Alert,
+  Switch,
 } from 'react-native';
-import { colors, spacing } from '../theme/colors';
+import { spacing, ThemeColors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { StorageService, UserStatistics } from '../utils/storage';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface ProfileScreenProps {
   navigation?: any;
@@ -18,6 +19,8 @@ interface ProfileScreenProps {
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
+  const { colors, isDark, toggleTheme } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [stats, setStats] = useState<UserStatistics>({
     totalSolvedQuestions: 0,
     totalCorrect: 0,
@@ -72,8 +75,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={[styles.topHeader, { paddingTop: Math.max(insets.top, 24) + 18 }]}>
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+      <View style={[styles.topHeader, { paddingTop: insets.top + spacing.md }]}>
         <View style={styles.headerTitleRow}>
           <TouchableOpacity
             style={styles.backButton}
@@ -141,6 +144,25 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
           </View>
         </View>
 
+        {/* Görünüm Ayarları */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Görünüm</Text>
+        </View>
+
+        <View style={styles.menuCard}>
+          <View style={styles.menuItem}>
+            <Text style={styles.menuItemText}>
+              {isDark ? '🌙 Karanlık Mod (Açık)' : '☀️ Karanlık Mod (Kapalı)'}
+            </Text>
+            <Switch
+              value={isDark}
+              onValueChange={toggleTheme}
+              trackColor={{ false: '#CBD5E1', true: colors.primary }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
+        </View>
+
         {/* Destek & Yasal */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Uygulama Bilgileri</Text>
@@ -192,14 +214,15 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
   },
   topHeader: {
     backgroundColor: colors.card,
-    paddingBottom: spacing.sm,
+    paddingBottom: spacing.md,
     paddingHorizontal: spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
@@ -213,7 +236,7 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
     paddingVertical: 6,
     paddingHorizontal: 12,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceMuted,
     borderRadius: 18,
     flexDirection: 'row',
     alignItems: 'center',

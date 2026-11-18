@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import { colors, spacing } from '../theme/colors';
+import { spacing, ThemeColors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { MOCK_FLASHCARDS } from '../data/mockFlashcards';
 import { QuestionCategory } from '../types';
 import { CATEGORIES } from '../data/categories';
@@ -19,6 +20,8 @@ interface FlashcardsScreenProps {
 
 export const FlashcardsScreen: React.FC<FlashcardsScreenProps> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [selectedTopic, setSelectedTopic] = useState<QuestionCategory | 'all'>('all');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -73,9 +76,9 @@ export const FlashcardsScreen: React.FC<FlashcardsScreenProps> = ({ navigation }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
       {/* Header */}
-      <View style={[styles.topHeader, { paddingTop: Math.max(insets.top, 24) + 18 }]}>
+      <View style={[styles.topHeader, { paddingTop: insets.top + spacing.md }]}>
         <View style={styles.headerTitleRow}>
           <TouchableOpacity
             style={styles.backButton}
@@ -232,14 +235,15 @@ export const FlashcardsScreen: React.FC<FlashcardsScreenProps> = ({ navigation }
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
   },
   topHeader: {
     backgroundColor: colors.card,
-    paddingBottom: spacing.sm,
+    paddingBottom: spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
@@ -253,7 +257,7 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
     paddingVertical: 6,
     paddingHorizontal: 12,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceMuted,
     borderRadius: 18,
     flexDirection: 'row',
     alignItems: 'center',
@@ -343,7 +347,7 @@ const styles = StyleSheet.create({
   },
   cardFlipped: {
     borderColor: colors.primaryLight,
-    backgroundColor: '#F8FAFF',
+    backgroundColor: colors.surfaceHighlight,
   },
   cardHeaderRow: {
     flexDirection: 'row',
@@ -400,7 +404,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   importantBox: {
-    backgroundColor: '#FEF3C7',
+    backgroundColor: colors.warningSurface,
     padding: spacing.md,
     borderRadius: 12,
     marginTop: spacing.md,
@@ -413,7 +417,7 @@ const styles = StyleSheet.create({
   },
   importantText: {
     fontSize: 12,
-    color: '#92400E',
+    color: colors.textPrimary,
     lineHeight: 18,
   },
   lawRef: {
@@ -436,7 +440,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   repeatBtn: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: colors.dangerLight,
     marginRight: spacing.sm,
   },
   repeatBtnText: {

@@ -1,16 +1,16 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
 } from 'react-native';
-import { colors, spacing } from '../theme/colors';
+import { spacing, ThemeColors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { UserExamAttempt, Question } from '../types';
 import { CATEGORIES } from '../data/categories';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface ExamResultScreenProps {
   route: any;
@@ -22,6 +22,8 @@ export const ExamResultScreen: React.FC<ExamResultScreenProps> = ({
   navigation,
 }) => {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { attempt, questions }: { attempt: UserExamAttempt; questions: Question[] } =
     route.params || {};
 
@@ -36,11 +38,11 @@ export const ExamResultScreen: React.FC<ExamResultScreenProps> = ({
   const passed = attempt.passed;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingTop: Math.max(insets.top, 24) + 18 },
+          { paddingTop: insets.top + spacing.md },
         ]}
         showsVerticalScrollIndicator={false}
       >
@@ -172,7 +174,8 @@ export const ExamResultScreen: React.FC<ExamResultScreenProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -259,9 +262,9 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   mistakeBanner: {
-    backgroundColor: '#FEF2F2',
+    backgroundColor: colors.dangerSurface,
     borderWidth: 1,
-    borderColor: '#FECACA',
+    borderColor: colors.danger,
     borderRadius: 14,
     padding: spacing.md,
     flexDirection: 'row',
@@ -285,7 +288,7 @@ const styles = StyleSheet.create({
   },
   mistakeSubtitle: {
     fontSize: 11,
-    color: '#991B1B',
+    color: colors.textSecondary,
     marginTop: 2,
   },
   mistakeArrow: {
@@ -357,7 +360,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   secondaryBtn: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.card,
     borderWidth: 1,
     borderColor: colors.border,
   },

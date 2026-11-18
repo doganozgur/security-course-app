@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import { colors, spacing } from '../theme/colors';
+import { spacing, ThemeColors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { calculateOGGScore } from '../utils/scoreCalculator';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -17,6 +18,8 @@ interface ScoreCalculatorScreenProps {
 
 export const ScoreCalculatorScreen: React.FC<ScoreCalculatorScreenProps> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [examType, setExamType] = useState<'silahsiz' | 'silahli'>('silahli');
   const [temelDogru, setTemelDogru] = useState<string>('65');
   const [silahDogru, setSilahDogru] = useState<string>('18');
@@ -34,8 +37,8 @@ export const ScoreCalculatorScreen: React.FC<ScoreCalculatorScreenProps> = ({ na
   });
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={[styles.topHeader, { paddingTop: Math.max(insets.top, 24) + 18 }]}>
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+      <View style={[styles.topHeader, { paddingTop: insets.top + spacing.md }]}>
         <View style={styles.headerTitleRow}>
           <TouchableOpacity
             style={styles.backButton}
@@ -241,14 +244,15 @@ export const ScoreCalculatorScreen: React.FC<ScoreCalculatorScreenProps> = ({ na
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
   },
   topHeader: {
     backgroundColor: colors.card,
-    paddingBottom: spacing.sm,
+    paddingBottom: spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
     paddingHorizontal: spacing.md,
@@ -262,7 +266,7 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
     paddingVertical: 6,
     paddingHorizontal: 12,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceMuted,
     borderRadius: 18,
     flexDirection: 'row',
     alignItems: 'center',
@@ -285,7 +289,7 @@ const styles = StyleSheet.create({
   },
   segmentedControl: {
     flexDirection: 'row',
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.surfaceMuted,
     borderRadius: 10,
     padding: 3,
   },
@@ -347,7 +351,7 @@ const styles = StyleSheet.create({
   inputBoxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.surfaceSubtle,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 8,
