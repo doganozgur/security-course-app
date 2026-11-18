@@ -407,7 +407,7 @@ const createStyles = (colors: ThemeColors) =>
     marginTop: 2,
   },
   dailyGoalBadge: {
-    backgroundColor: colors.primaryLight,
+    backgroundColor: colors.surfaceHighlight,
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 10,

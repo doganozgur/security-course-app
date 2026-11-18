@@ -34,7 +34,13 @@ const AppContent = () => {
       };
 
   return (
-    <NavigationContainer theme={navigationTheme}>
+    <NavigationContainer
+      theme={navigationTheme}
+      documentTitle={{
+        formatter: (options) =>
+          options?.title ? `${options.title} — Özel Güvenlik` : 'Özel Güvenlik Sınav Hazırlık',
+      }}
+    >
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <RootNavigator />
     </NavigationContainer>

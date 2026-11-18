@@ -456,7 +456,7 @@ const createStyles = (colors: ThemeColors) =>
     alignItems: 'center',
   },
   prefPillActive: {
-    backgroundColor: colors.primaryLight,
+    backgroundColor: colors.surfaceHighlight,
     borderColor: colors.primary,
   },
   prefPillText: {

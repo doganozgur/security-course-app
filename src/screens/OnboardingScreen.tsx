@@ -89,7 +89,9 @@ export const OnboardingScreen: React.FC = () => {
                   <Text style={[styles.trackTitle, isSelected && styles.trackTitleActive]}>
                     {item.title}
                   </Text>
-                  <Text style={styles.trackSubtitle}>{item.subtitle}</Text>
+                  <Text style={[styles.trackSubtitle, isSelected && styles.trackSubtitleActive]}>
+                    {item.subtitle}
+                  </Text>
                 </View>
                 <View style={[styles.radioOuter, isSelected && styles.radioOuterActive]}>
                   {isSelected && <View style={styles.radioInner} />}
@@ -155,7 +157,7 @@ const createStyles = (colors: ThemeColors) =>
     },
     badge: {
       alignSelf: 'flex-start',
-      backgroundColor: colors.primaryLight,
+      backgroundColor: colors.surfaceHighlight,
       paddingHorizontal: 10,
       paddingVertical: 5,
       borderRadius: 8,
@@ -200,7 +202,7 @@ const createStyles = (colors: ThemeColors) =>
     },
     trackCardActive: {
       borderColor: colors.primary,
-      backgroundColor: colors.primaryLight,
+      backgroundColor: colors.surfaceHighlight,
     },
     iconBox: {
       width: 44,
@@ -234,6 +236,9 @@ const createStyles = (colors: ThemeColors) =>
       fontSize: 12.5,
       lineHeight: 17,
       color: colors.textSecondary,
+    },
+    trackSubtitleActive: {
+      color: colors.textPrimary,
     },
     radioOuter: {
       width: 22,
@@ -269,7 +274,7 @@ const createStyles = (colors: ThemeColors) =>
     },
     goalPillActive: {
       borderColor: colors.primary,
-      backgroundColor: colors.primaryLight,
+      backgroundColor: colors.surfaceHighlight,
     },
     goalNumber: {
       fontSize: 20,
