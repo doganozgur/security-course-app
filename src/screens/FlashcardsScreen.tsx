@@ -89,9 +89,6 @@ export const FlashcardsScreen: React.FC<FlashcardsScreenProps> = ({ navigation }
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Hap Bilgi Kartları</Text>
         </View>
-        <Text style={styles.headerSubtitle}>
-          Sınavda en çok çıkan kritik maddeler ve terimler
-        </Text>
 
         {/* Konu Filtreleri */}
         <ScrollView

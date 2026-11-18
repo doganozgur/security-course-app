@@ -72,6 +72,20 @@ export interface ScoreCalculationInput {
   atisIsabet: number; // 0 - 5
 }
 
+export type ExamTrack = 'silahli' | 'silahsiz' | 'yenileme';
+
+export interface UserPreferences {
+  hasCompletedOnboarding: boolean;
+  examType: ExamTrack;
+  dailyGoal: number;
+  targetPeriod: string;
+}
+
+export interface DailyProgress {
+  date: string; // YYYY-MM-DD
+  solvedCount: number;
+}
+
 export interface ScoreCalculationResult {
   temelPuan: number; // 0 - 100
   silahYaziliPuan: number; // 0 - 50 (silahDogru * 2)

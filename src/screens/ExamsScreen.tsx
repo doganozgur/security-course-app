@@ -142,9 +142,6 @@ export const ExamsScreen: React.FC<ExamsScreenProps> = ({ navigation }) => {
           </TouchableOpacity>
           <Text style={styles.screenTitle}>Çıkmış Sınavlar</Text>
         </View>
-        <Text style={styles.screenSubtitle}>
-          EGM Özel Güvenlik Denetleme Başkanlığı Resmi Sınavları
-        </Text>
 
         {/* Filtre Sekmeleri */}
         <View style={styles.filterRow}>

@@ -92,9 +92,6 @@ export const MistakesScreen: React.FC<MistakesScreenProps> = ({ navigation }) =>
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Hata Defterim ({wrongQuestions.length})</Text>
         </View>
-        <Text style={styles.headerSubtitle}>
-          Sınavlarda yanlış yaptığınız veya boş bıraktığınız sorular burada birikir.
-        </Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollArea} showsVerticalScrollIndicator={false}>

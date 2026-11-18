@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { spacing, ThemeColors } from '../theme/colors';
 import { useTheme } from '../context/ThemeContext';
+import { EXAM_TRACK_LABELS, useUser } from '../context/UserContext';
+import { ExamTrack } from '../types';
 import { StorageService, UserStatistics } from '../utils/storage';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -20,6 +22,7 @@ interface ProfileScreenProps {
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const { colors, isDark, toggleTheme } = useTheme();
+  const { preferences, updateExamType, updateDailyGoal } = useUser();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const [stats, setStats] = useState<UserStatistics>({
     totalSolvedQuestions: 0,
@@ -87,7 +90,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Profil & Ayarlar</Text>
         </View>
-        <Text style={styles.headerSubtitle}>Özel Güvenlik Sınav Hazırlık Portalı</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollArea} showsVerticalScrollIndicator={false}>
@@ -144,6 +146,55 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
           </View>
         </View>
 
+        {/* Sınav Tercihleri */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Sınav Tercihlerim</Text>
+        </View>
+
+        <View style={styles.menuCard}>
+          <View style={styles.prefBlock}>
+            <Text style={styles.prefLabel}>Sınav Türü</Text>
+            <View style={styles.pillRow}>
+              {(['silahli', 'silahsiz', 'yenileme'] as ExamTrack[]).map((track) => {
+                const active = preferences.examType === track;
+                return (
+                  <TouchableOpacity
+                    key={track}
+                    style={[styles.prefPill, active && styles.prefPillActive]}
+                    onPress={() => updateExamType(track)}
+                  >
+                    <Text style={[styles.prefPillText, active && styles.prefPillTextActive]}>
+                      {EXAM_TRACK_LABELS[track]}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+
+          <View style={styles.divider} />
+
+          <View style={styles.prefBlock}>
+            <Text style={styles.prefLabel}>Günlük Soru Hedefi</Text>
+            <View style={styles.pillRow}>
+              {[10, 20, 30].map((goal) => {
+                const active = preferences.dailyGoal === goal;
+                return (
+                  <TouchableOpacity
+                    key={goal}
+                    style={[styles.prefPill, active && styles.prefPillActive]}
+                    onPress={() => updateDailyGoal(goal)}
+                  >
+                    <Text style={[styles.prefPillText, active && styles.prefPillTextActive]}>
+                      {goal} Soru
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+        </View>
+
         {/* Görünüm Ayarları */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Görünüm</Text>
@@ -169,6 +220,16 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
         </View>
 
         <View style={styles.menuCard}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => navigation?.navigate('Faq')}
+          >
+            <Text style={styles.menuItemText}>❓ Sıkça Sorulan Sorular</Text>
+            <Text style={styles.menuArrow}>›</Text>
+          </TouchableOpacity>
+
+          <View style={styles.divider} />
+
           <TouchableOpacity
             style={styles.menuItem}
             onPress={() => {
@@ -250,11 +311,6 @@ const createStyles = (colors: ThemeColors) =>
     fontSize: 20,
     fontWeight: 'bold',
     color: colors.textPrimary,
-  },
-  headerSubtitle: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginTop: 2,
   },
   scrollArea: {
     padding: spacing.md,
@@ -375,6 +431,42 @@ const createStyles = (colors: ThemeColors) =>
   menuArrow: {
     fontSize: 18,
     color: colors.textMuted,
+  },
+  prefBlock: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  prefLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.textSecondary,
+    marginBottom: spacing.xs,
+  },
+  pillRow: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+  },
+  prefPill: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 10,
+    backgroundColor: colors.background,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: 'center',
+  },
+  prefPillActive: {
+    backgroundColor: colors.primaryLight,
+    borderColor: colors.primary,
+  },
+  prefPillText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.textSecondary,
+  },
+  prefPillTextActive: {
+    color: colors.primary,
+    fontWeight: '700',
   },
   versionText: {
     textAlign: 'center',

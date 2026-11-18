@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { spacing, ThemeColors } from '../theme/colors';
 import { useTheme } from '../context/ThemeContext';
+import { useUser } from '../context/UserContext';
 import { MOCK_QUESTIONS, EXAM_PERIODS } from '../data/mockExams';
 import { Question, UserExamAttempt } from '../types';
 import { StorageService } from '../utils/storage';
@@ -27,11 +28,19 @@ export const ExamSolveScreen: React.FC<ExamSolveScreenProps> = ({
 }) => {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
+  const { preferences, recordSolvedQuestions } = useUser();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const { examId = 'ogg-105', mode = 'real' } = route.params || {};
 
   const examInfo = EXAM_PERIODS.find((e) => e.id === examId) || EXAM_PERIODS[0];
-  const questions: Question[] = MOCK_QUESTIONS[examId] || MOCK_QUESTIONS['ogg-105'];
+  const rawQuestions: Question[] = MOCK_QUESTIONS[examId] || MOCK_QUESTIONS['ogg-105'];
+  const questions: Question[] = useMemo(() => {
+    if (preferences.examType === 'silahsiz') {
+      const nonWeapon = rawQuestions.filter((q) => !q.isWeaponQuestion);
+      return nonWeapon.length > 0 ? nonWeapon : rawQuestions;
+    }
+    return rawQuestions;
+  }, [rawQuestions, preferences.examType]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<string, 'A' | 'B' | 'C' | 'D' | 'E'>>({});
@@ -155,6 +164,7 @@ export const ExamSolveScreen: React.FC<ExamSolveScreenProps> = ({
       await StorageService.addWrongQuestions(wrongQuestions);
     }
     await StorageService.updateStats(questions.length, correctCount, wrongCount);
+    await recordSolvedQuestions(Object.keys(userAnswers).length || questions.length);
 
     navigation.replace('ExamResult', { attempt, questions });
   };

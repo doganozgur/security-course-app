@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserExamAttempt, Question } from '../types';
+import { UserExamAttempt, Question, UserPreferences, DailyProgress } from '../types';
 
 const STORAGE_KEYS = {
   EXAM_ATTEMPTS: '@ogg_exam_attempts',
@@ -7,6 +7,15 @@ const STORAGE_KEYS = {
   FAVORITE_QUESTIONS: '@ogg_favorite_questions',
   KNOWN_FLASHCARDS: '@ogg_known_flashcards',
   USER_STATS: '@ogg_user_stats',
+  USER_PREFERENCES: '@ogg_user_preferences',
+  DAILY_PROGRESS: '@ogg_daily_progress',
+};
+
+export const DEFAULT_PREFERENCES: UserPreferences = {
+  hasCompletedOnboarding: false,
+  examType: 'silahli',
+  dailyGoal: 20,
+  targetPeriod: '124. Dönem',
 };
 
 export interface UserStatistics {
@@ -190,5 +199,54 @@ export const StorageService = {
         lastStudyDate: new Date().toISOString().split('T')[0],
       };
     }
+  },
+
+  // Kullanıcı Tercihleri (Sınav Türü, Günlük Hedef, Onboarding)
+  async getUserPreferences(): Promise<UserPreferences> {
+    try {
+      const data = await AsyncStorage.getItem(STORAGE_KEYS.USER_PREFERENCES);
+      return data ? { ...DEFAULT_PREFERENCES, ...JSON.parse(data) } : DEFAULT_PREFERENCES;
+    } catch (e) {
+      return DEFAULT_PREFERENCES;
+    }
+  },
+
+  async saveUserPreferences(prefs: UserPreferences): Promise<void> {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.USER_PREFERENCES, JSON.stringify(prefs));
+    } catch (e) {
+      console.error('Error saving user preferences', e);
+    }
+  },
+
+  // Günlük Çözülen Soru İlerlemesi
+  async getDailyProgress(): Promise<DailyProgress> {
+    const today = new Date().toISOString().split('T')[0];
+    try {
+      const data = await AsyncStorage.getItem(STORAGE_KEYS.DAILY_PROGRESS);
+      if (data) {
+        const parsed: DailyProgress = JSON.parse(data);
+        if (parsed.date === today) {
+          return parsed;
+        }
+      }
+      return { date: today, solvedCount: 0 };
+    } catch (e) {
+      return { date: today, solvedCount: 0 };
+    }
+  },
+
+  async incrementDailyProgress(count: number): Promise<DailyProgress> {
+    const current = await this.getDailyProgress();
+    const updated: DailyProgress = {
+      date: current.date,
+      solvedCount: Math.max(0, current.solvedCount + count),
+    };
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.DAILY_PROGRESS, JSON.stringify(updated));
+    } catch (e) {
+      console.error('Error saving daily progress', e);
+    }
+    return updated;
   },
 };

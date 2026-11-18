@@ -4,6 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { ThemeProvider, useTheme } from './src/context/ThemeContext';
+import { UserProvider } from './src/context/UserContext';
 
 const AppContent = () => {
   const { isDark, colors } = useTheme();
@@ -44,7 +45,9 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <ThemeProvider>
-        <AppContent />
+        <UserProvider>
+          <AppContent />
+        </UserProvider>
       </ThemeProvider>
     </SafeAreaProvider>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { spacing, ThemeColors } from '../theme/colors';
 import { useTheme } from '../context/ThemeContext';
+import { useUser } from '../context/UserContext';
 import { calculateOGGScore } from '../utils/scoreCalculator';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -19,8 +20,15 @@ interface ScoreCalculatorScreenProps {
 export const ScoreCalculatorScreen: React.FC<ScoreCalculatorScreenProps> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
+  const { preferences } = useUser();
   const styles = useMemo(() => createStyles(colors), [colors]);
-  const [examType, setExamType] = useState<'silahsiz' | 'silahli'>('silahli');
+  const [examType, setExamType] = useState<'silahsiz' | 'silahli'>(
+    preferences.examType === 'silahsiz' ? 'silahsiz' : 'silahli'
+  );
+
+  useEffect(() => {
+    setExamType(preferences.examType === 'silahsiz' ? 'silahsiz' : 'silahli');
+  }, [preferences.examType]);
   const [temelDogru, setTemelDogru] = useState<string>('65');
   const [silahDogru, setSilahDogru] = useState<string>('18');
   const [atisIsabet, setAtisIsabet] = useState<string>('4');
@@ -49,9 +57,6 @@ export const ScoreCalculatorScreen: React.FC<ScoreCalculatorScreenProps> = ({ na
           </TouchableOpacity>
           <Text style={styles.headerTitle}>ÖGG Puan Hesaplama</Text>
         </View>
-        <Text style={styles.headerSubtitle}>
-          EGM 5188 Sayılı Kanun Resmi Değerlendirme Kriterleri
-        </Text>
 
         {/* Silahlı / Silahsız Seçimi */}
         <View style={styles.segmentedControl}>

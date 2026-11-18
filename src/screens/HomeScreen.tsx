@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { spacing, ThemeColors } from '../theme/colors';
 import { useTheme } from '../context/ThemeContext';
+import { EXAM_TRACK_LABELS, useUser } from '../context/UserContext';
 import { StorageService, UserStatistics } from '../utils/storage';
 import { EXAM_PERIODS } from '../data/mockExams';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,6 +21,7 @@ interface HomeScreenProps {
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const { colors, isDark, toggleTheme } = useTheme();
+  const { preferences, dailyProgress, refreshDailyProgress } = useUser();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const [stats, setStats] = useState<UserStatistics>({
     totalSolvedQuestions: 0,
@@ -38,6 +40,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       setStats(userStats);
       const wrongs = await StorageService.getWrongQuestions();
       setWrongCount(wrongs.length);
+      await refreshDailyProgress();
     };
 
     const unsubscribe = navigation.addListener('focus', () => {
@@ -49,6 +52,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   }, [navigation]);
 
   const latestExam = EXAM_PERIODS[0];
+  const trackLabel = EXAM_TRACK_LABELS[preferences.examType];
+  const dailyGoal = Math.max(1, preferences.dailyGoal);
+  const solvedToday = dailyProgress.solvedCount;
+  const dailyRatio = Math.min(1, solvedToday / dailyGoal);
+  const remainingToday = Math.max(0, dailyGoal - solvedToday);
 
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right']}>
@@ -57,7 +65,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + spacing.md }]}>
         <View>
-          <Text style={styles.headerSubtitle}>ÖZEL GÜVENLİK SINAVINA HAZIRLIK</Text>
+          <Text style={styles.headerSubtitle}>{trackLabel.toUpperCase()} • HAZIRLIK</Text>
           <Text style={styles.headerTitle}>Geleceğin Güvenliği</Text>
         </View>
         <View style={styles.headerActions}>
@@ -104,6 +112,31 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           </View>
         </View>
 
+        {/* Günlük Hedef Kartı */}
+        <View style={styles.dailyGoalCard}>
+          <View style={styles.dailyGoalHeader}>
+            <View>
+              <Text style={styles.dailyGoalTitle}>
+                Bugün {solvedToday} / {dailyGoal} soru
+              </Text>
+              <Text style={styles.dailyGoalSub}>
+                {remainingToday === 0
+                  ? '🎉 Günlük hedefini tamamladın!'
+                  : `Hedefe ${remainingToday} soru kaldı`}
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.dailyGoalBadge}
+              onPress={() => navigation.navigate('ProfileTab')}
+            >
+              <Text style={styles.dailyGoalBadgeText}>{trackLabel}</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.progressTrack}>
+            <View style={[styles.progressFill, { width: `${Math.round(dailyRatio * 100)}%` }]} />
+          </View>
+        </View>
+
         {/* Hızlı Başlat: En Son Çıkmış Sınav */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Hızlı Başlat</Text>
@@ -120,7 +153,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             </View>
             <Text style={styles.actionHeroTitle}>{latestExam.title}</Text>
             <Text style={styles.actionHeroSubtitle}>
-              100 Temel + 25 Silah Sorusu • 120 Dakika
+              {preferences.examType === 'silahsiz'
+                ? '100 Temel Eğitim Sorusu • 120 Dakika'
+                : '100 Temel + 25 Silah Sorusu • 150 Dakika'}
             </Text>
           </View>
           <View style={styles.playButtonCircle}>
@@ -207,13 +242,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             </Text>
             <Text style={styles.statLabel}>Başarı Oranı</Text>
           </View>
-        </View>
-
-        {/* Bilgilendirme Notu */}
-        <View style={styles.disclaimerBox}>
-          <Text style={styles.disclaimerText}>
-            ℹ️ Bu uygulama Özel Güvenlik Görevlisi adayları için bağımsız bir eğitim platformudur. EGM resmi kurumu değildir.
-          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -353,6 +381,52 @@ const createStyles = (colors: ThemeColors) =>
     color: '#FFFFFF',
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  dailyGoalCard: {
+    backgroundColor: colors.card,
+    borderRadius: 16,
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  dailyGoalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  dailyGoalTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: colors.textPrimary,
+  },
+  dailyGoalSub: {
+    fontSize: 12.5,
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
+  dailyGoalBadge: {
+    backgroundColor: colors.primaryLight,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+  },
+  dailyGoalBadgeText: {
+    color: colors.primary,
+    fontSize: 11.5,
+    fontWeight: '700',
+  },
+  progressTrack: {
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.background,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 4,
+    backgroundColor: colors.primary,
   },
   sectionHeader: {
     marginBottom: spacing.sm,
@@ -501,16 +575,5 @@ const createStyles = (colors: ThemeColors) =>
     width: 1,
     height: 30,
     backgroundColor: colors.border,
-  },
-  disclaimerBox: {
-    backgroundColor: colors.surfaceMuted,
-    borderRadius: 10,
-    padding: spacing.md,
-  },
-  disclaimerText: {
-    fontSize: 11,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 16,
   },
 });
