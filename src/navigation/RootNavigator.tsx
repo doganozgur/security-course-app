@@ -9,6 +9,9 @@ import { FaqScreen } from '../screens/FaqScreen';
 import { OnboardingScreen } from '../screens/OnboardingScreen';
 import { LessonsScreen } from '../screens/LessonsScreen';
 import { LessonReaderScreen } from '../screens/LessonReaderScreen';
+import { XrayGameScreen } from '../screens/XrayGameScreen';
+import { ChallengeGameScreen } from '../screens/ChallengeGameScreen';
+import { BallSortGameScreen } from '../screens/BallSortGameScreen';
 import { useUser } from '../context/UserContext';
 import { useTheme } from '../context/ThemeContext';
 
@@ -58,6 +61,21 @@ export const RootNavigator = () => {
             name="LessonReader"
             component={LessonReaderScreen}
             options={{ title: 'Konu Kitabı' }}
+          />
+          <Stack.Screen
+            name="XrayGame"
+            component={XrayGameScreen}
+            options={{ title: 'X-Ray Oyunu' }}
+          />
+          <Stack.Screen
+            name="ChallengeGame"
+            component={ChallengeGameScreen}
+            options={{ title: 'Rakiplerine Meydan Oku' }}
+          />
+          <Stack.Screen
+            name="BallSortGame"
+            component={BallSortGameScreen}
+            options={{ title: 'Mola Oyunu' }}
           />
         </>
       )}

@@ -126,3 +126,10 @@ export interface LessonBook {
   isWeaponOnly?: boolean;
   chapters: LessonChapter[];
 }
+
+export interface GameProgress {
+  xrayBestScore: number;
+  challengeWins: number;
+  challengeTotal: number;
+  ballSortLevel: number;
+}

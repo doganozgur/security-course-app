@@ -1,5 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserExamAttempt, Question, UserPreferences, DailyProgress } from '../types';
+import {
+  UserExamAttempt,
+  Question,
+  UserPreferences,
+  DailyProgress,
+  GameProgress,
+} from '../types';
 
 const STORAGE_KEYS = {
   EXAM_ATTEMPTS: '@ogg_exam_attempts',
@@ -7,9 +13,17 @@ const STORAGE_KEYS = {
   FAVORITE_QUESTIONS: '@ogg_favorite_questions',
   KNOWN_FLASHCARDS: '@ogg_known_flashcards',
   COMPLETED_LESSON_CHAPTERS: '@ogg_completed_lesson_chapters',
+  GAME_PROGRESS: '@ogg_game_progress',
   USER_STATS: '@ogg_user_stats',
   USER_PREFERENCES: '@ogg_user_preferences',
   DAILY_PROGRESS: '@ogg_daily_progress',
+};
+
+export const DEFAULT_GAME_PROGRESS: GameProgress = {
+  xrayBestScore: 0,
+  challengeWins: 0,
+  challengeTotal: 0,
+  ballSortLevel: 1,
 };
 
 export const DEFAULT_PREFERENCES: UserPreferences = {
@@ -281,5 +295,33 @@ export const StorageService = {
     } catch (e) {
       return false;
     }
+  },
+
+  // Oyun İstatistikleri ve Skorları
+  async getGameProgress(): Promise<GameProgress> {
+    try {
+      const data = await AsyncStorage.getItem(STORAGE_KEYS.GAME_PROGRESS);
+      return data
+        ? { ...DEFAULT_GAME_PROGRESS, ...JSON.parse(data) }
+        : DEFAULT_GAME_PROGRESS;
+    } catch (e) {
+      return DEFAULT_GAME_PROGRESS;
+    }
+  },
+
+  async updateGameProgress(
+    partial: Partial<GameProgress>
+  ): Promise<GameProgress> {
+    const current = await this.getGameProgress();
+    const updated: GameProgress = { ...current, ...partial };
+    try {
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.GAME_PROGRESS,
+        JSON.stringify(updated)
+      );
+    } catch (e) {
+      console.error('Error saving game progress', e);
+    }
+    return updated;
   },
 };

@@ -10,7 +10,8 @@ import {
 import { spacing, ThemeColors } from '../theme/colors';
 import { useTheme } from '../context/ThemeContext';
 import { EXAM_TRACK_LABELS, useUser } from '../context/UserContext';
-import { StorageService, UserStatistics } from '../utils/storage';
+import { StorageService, UserStatistics, DEFAULT_GAME_PROGRESS } from '../utils/storage';
+import { GameProgress } from '../types';
 import { EXAM_PERIODS } from '../data/mockExams';
 import { LESSON_BOOKS } from '../data/lessons';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -35,6 +36,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   const [wrongCount, setWrongCount] = useState(0);
   const [completedChapterIds, setCompletedChapterIds] = useState<string[]>([]);
+  const [gameProgress, setGameProgress] = useState<GameProgress>(DEFAULT_GAME_PROGRESS);
 
   useEffect(() => {
     const loadData = async () => {
@@ -44,6 +46,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       setWrongCount(wrongs.length);
       const completed = await StorageService.getCompletedChapterIds();
       setCompletedChapterIds(completed);
+      const games = await StorageService.getGameProgress();
+      setGameProgress(games);
       await refreshDailyProgress();
     };
 
@@ -304,6 +308,88 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             );
           })}
         </ScrollView>
+
+        {/* Oyunlar (3 Bölüm) */}
+        <View style={styles.sectionHeaderRow}>
+          <View>
+            <Text style={styles.sectionTitle}>🎮 Oyunlar</Text>
+            <Text style={styles.sectionSubtitle}>Eğlenerek öğren ve kısa mola ver</Text>
+          </View>
+        </View>
+
+        <View style={styles.gamesColumn}>
+          <TouchableOpacity
+            style={[styles.gameCard, { borderLeftColor: '#14B8A6' }]}
+            activeOpacity={0.85}
+            onPress={() => navigation.navigate('XrayGame')}
+          >
+            <View style={[styles.gameIconWrap, { backgroundColor: 'rgba(20, 184, 166, 0.14)' }]}>
+              <Text style={styles.gameIcon}>📡</Text>
+            </View>
+            <View style={styles.gameInfo}>
+              <Text style={styles.gameTitle}>X-Ray Oyunu</Text>
+              <Text style={styles.gameSubtitle}>
+                Bagajları tara, renk kodlarıyla yasaklıyı yakala
+              </Text>
+            </View>
+            <View style={styles.gameRight}>
+              <View style={styles.gameBadge}>
+                <Text style={styles.gameBadgeText}>
+                  🏆 {gameProgress.xrayBestScore}
+                </Text>
+              </View>
+              <Text style={styles.gameArrow}>Oyna →</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.gameCard, { borderLeftColor: '#F59E0B' }]}
+            activeOpacity={0.85}
+            onPress={() => navigation.navigate('ChallengeGame')}
+          >
+            <View style={[styles.gameIconWrap, { backgroundColor: 'rgba(245, 158, 11, 0.14)' }]}>
+              <Text style={styles.gameIcon}>⚔️</Text>
+            </View>
+            <View style={styles.gameInfo}>
+              <Text style={styles.gameTitle}>Rakiplerine Meydan Oku</Text>
+              <Text style={styles.gameSubtitle}>
+                7 soruluk 1’e 1 hızlı bilgi düellosu
+              </Text>
+            </View>
+            <View style={styles.gameRight}>
+              <View style={styles.gameBadge}>
+                <Text style={styles.gameBadgeText}>
+                  {gameProgress.challengeWins} Galibiyet
+                </Text>
+              </View>
+              <Text style={styles.gameArrow}>Başla →</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.gameCard, { borderLeftColor: '#EC4899' }]}
+            activeOpacity={0.85}
+            onPress={() => navigation.navigate('BallSortGame')}
+          >
+            <View style={[styles.gameIconWrap, { backgroundColor: 'rgba(236, 72, 153, 0.14)' }]}>
+              <Text style={styles.gameIcon}>🎨</Text>
+            </View>
+            <View style={styles.gameInfo}>
+              <Text style={styles.gameTitle}>Mola Oyunu</Text>
+              <Text style={styles.gameSubtitle}>
+                Renkli topları tüplerde üst üste diz
+              </Text>
+            </View>
+            <View style={styles.gameRight}>
+              <View style={styles.gameBadge}>
+                <Text style={styles.gameBadgeText}>
+                  Seviye {gameProgress.ballSortLevel}
+                </Text>
+              </View>
+              <Text style={styles.gameArrow}>Oyna →</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
 
         {/* İlerleme ve Başarı Özeti */}
         <View style={styles.sectionHeader}>
@@ -627,6 +713,69 @@ const createStyles = (colors: ThemeColors) =>
     fontSize: 10.5,
     fontWeight: '700',
     color: colors.textSecondary,
+  },
+  gamesColumn: {
+    gap: spacing.sm + 2,
+    marginBottom: spacing.md,
+  },
+  gameCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.card,
+    borderRadius: 14,
+    padding: spacing.sm + 4,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderLeftWidth: 5,
+    gap: spacing.sm + 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  gameIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  gameIcon: {
+    fontSize: 22,
+  },
+  gameInfo: {
+    flex: 1,
+  },
+  gameTitle: {
+    fontSize: 14.5,
+    fontWeight: '800',
+    color: colors.textPrimary,
+  },
+  gameSubtitle: {
+    fontSize: 11.5,
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
+  gameRight: {
+    alignItems: 'flex-end',
+    gap: 4,
+  },
+  gameBadge: {
+    backgroundColor: colors.surfaceMuted,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+  },
+  gameBadgeText: {
+    fontSize: 10.5,
+    fontWeight: '700',
+    color: colors.textPrimary,
+  },
+  gameArrow: {
+    fontSize: 11.5,
+    fontWeight: '800',
+    color: colors.primary,
   },
   sectionTitle: {
     fontSize: 16,
