@@ -2,6 +2,8 @@
 
 EGM Özel Güvenlik Denetleme Başkanlığı sınavlarına hazırlanan adaylar ve eğitim kurumları için geliştirilmiş, **Apple App Store** ve **Google Play Store** uyumlu React Native (Expo) mobil uygulaması.
 
+🌐 **Canlı Demo (Web):** https://ozel-guvenlik-app.netlify.app/
+
 ---
 
 ## 📱 Ekranlar ve Temel Modüller
