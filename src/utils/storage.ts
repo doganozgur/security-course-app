@@ -6,6 +6,7 @@ const STORAGE_KEYS = {
   WRONG_QUESTIONS: '@ogg_wrong_questions',
   FAVORITE_QUESTIONS: '@ogg_favorite_questions',
   KNOWN_FLASHCARDS: '@ogg_known_flashcards',
+  COMPLETED_LESSON_CHAPTERS: '@ogg_completed_lesson_chapters',
   USER_STATS: '@ogg_user_stats',
   USER_PREFERENCES: '@ogg_user_preferences',
   DAILY_PROGRESS: '@ogg_daily_progress',
@@ -248,5 +249,37 @@ export const StorageService = {
       console.error('Error saving daily progress', e);
     }
     return updated;
+  },
+
+  // Dersler / Konu Kitabı Okunan Bölümler
+  async getCompletedChapterIds(): Promise<string[]> {
+    try {
+      const data = await AsyncStorage.getItem(STORAGE_KEYS.COMPLETED_LESSON_CHAPTERS);
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      return [];
+    }
+  },
+
+  async toggleCompletedChapter(chapterId: string): Promise<boolean> {
+    try {
+      const existing = await this.getCompletedChapterIds();
+      const set = new Set(existing);
+      let isCompleted = false;
+      if (set.has(chapterId)) {
+        set.delete(chapterId);
+        isCompleted = false;
+      } else {
+        set.add(chapterId);
+        isCompleted = true;
+      }
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.COMPLETED_LESSON_CHAPTERS,
+        JSON.stringify(Array.from(set))
+      );
+      return isCompleted;
+    } catch (e) {
+      return false;
+    }
   },
 };

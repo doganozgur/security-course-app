@@ -12,6 +12,7 @@ import { useTheme } from '../context/ThemeContext';
 import { EXAM_TRACK_LABELS, useUser } from '../context/UserContext';
 import { StorageService, UserStatistics } from '../utils/storage';
 import { EXAM_PERIODS } from '../data/mockExams';
+import { LESSON_BOOKS } from '../data/lessons';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface HomeScreenProps {
@@ -33,6 +34,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   });
 
   const [wrongCount, setWrongCount] = useState(0);
+  const [completedChapterIds, setCompletedChapterIds] = useState<string[]>([]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -40,6 +42,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       setStats(userStats);
       const wrongs = await StorageService.getWrongQuestions();
       setWrongCount(wrongs.length);
+      const completed = await StorageService.getCompletedChapterIds();
+      setCompletedChapterIds(completed);
       await refreshDailyProgress();
     };
 
@@ -208,6 +212,98 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             <Text style={styles.gridSubtitle}>Yanlışlarım</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Dersler (Konu Kitabı) */}
+        <View style={styles.sectionHeaderRow}>
+          <View>
+            <Text style={styles.sectionTitle}>Dersler</Text>
+            <Text style={styles.sectionSubtitle}>Konu kitabı gibi bölüm bölüm oku</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.seeAllButton}
+            onPress={() => navigation.navigate('Lessons')}
+            activeOpacity={0.75}
+          >
+            <Text style={styles.seeAllText}>Tümünü Gör →</Text>
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.lessonsShelf}
+        >
+          {LESSON_BOOKS.map((book) => {
+            const readCount = book.chapters.filter((ch) =>
+              completedChapterIds.includes(ch.id)
+            ).length;
+            const totalChapters = book.chapters.length;
+            const ratio = totalChapters > 0 ? readCount / totalChapters : 0;
+            const isDone = readCount === totalChapters && totalChapters > 0;
+
+            return (
+              <TouchableOpacity
+                key={book.id}
+                style={[styles.lessonBookCard, { borderTopColor: book.color }]}
+                activeOpacity={0.85}
+                onPress={() =>
+                  navigation.navigate('LessonReader', { lessonId: book.id })
+                }
+              >
+                <View style={styles.lessonBookHeader}>
+                  <View
+                    style={[
+                      styles.lessonEmojiBox,
+                      { backgroundColor: `${book.color}1A` },
+                    ]}
+                  >
+                    <Text style={styles.lessonEmoji}>{book.emoji}</Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.lessonWeightPill,
+                      { backgroundColor: `${book.color}18` },
+                    ]}
+                  >
+                    <Text style={[styles.lessonWeightText, { color: book.color }]}>
+                      {book.examQuestionCount} Soru
+                    </Text>
+                  </View>
+                </View>
+
+                <Text style={styles.lessonBookTitle} numberOfLines={2}>
+                  {book.shortTitle}
+                </Text>
+                <Text style={styles.lessonBookMeta}>
+                  {totalChapters} Bölüm
+                  {book.isWeaponOnly ? ' • Silahlı' : ''}
+                </Text>
+
+                <View style={styles.lessonProgressWrap}>
+                  <View style={styles.lessonProgressTrack}>
+                    <View
+                      style={[
+                        styles.lessonProgressFill,
+                        {
+                          width: `${Math.round(ratio * 100)}%`,
+                          backgroundColor: isDone ? colors.accent : book.color,
+                        },
+                      ]}
+                    />
+                  </View>
+                  <Text
+                    style={[
+                      styles.lessonProgressText,
+                      isDone && { color: colors.accent },
+                    ]}
+                  >
+                    {isDone ? 'Tamamlandı ✓' : `${readCount}/${totalChapters}`}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
 
         {/* İlerleme ve Başarı Özeti */}
         <View style={styles.sectionHeader}>
@@ -430,6 +526,107 @@ const createStyles = (colors: ThemeColors) =>
   },
   sectionHeader: {
     marginBottom: spacing.sm,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  sectionSubtitle: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    marginTop: 1,
+  },
+  seeAllButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    backgroundColor: colors.surfaceHighlight,
+  },
+  seeAllText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.primary,
+  },
+  lessonsShelf: {
+    gap: spacing.sm + 4,
+    paddingBottom: spacing.md,
+    paddingRight: spacing.xs,
+  },
+  lessonBookCard: {
+    width: 158,
+    backgroundColor: colors.card,
+    borderRadius: 14,
+    padding: spacing.sm + 4,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderTopWidth: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 1,
+    justifyContent: 'space-between',
+  },
+  lessonBookHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  lessonEmojiBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  lessonEmoji: {
+    fontSize: 18,
+  },
+  lessonWeightPill: {
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  lessonWeightText: {
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  lessonBookTitle: {
+    fontSize: 13.5,
+    fontWeight: '800',
+    color: colors.textPrimary,
+    lineHeight: 18,
+    minHeight: 36,
+  },
+  lessonBookMeta: {
+    fontSize: 11,
+    color: colors.textSecondary,
+    marginTop: 2,
+    marginBottom: spacing.sm,
+  },
+  lessonProgressWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  lessonProgressTrack: {
+    flex: 1,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: colors.surfaceMuted,
+    overflow: 'hidden',
+  },
+  lessonProgressFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  lessonProgressText: {
+    fontSize: 10.5,
+    fontWeight: '700',
+    color: colors.textSecondary,
   },
   sectionTitle: {
     fontSize: 16,

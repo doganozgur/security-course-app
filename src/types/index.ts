@@ -97,3 +97,32 @@ export interface ScoreCalculationResult {
   statusMessage: string;
   details: string[];
 }
+
+export interface LessonSection {
+  heading: string;
+  paragraphs: string[];
+  bullets?: string[];
+  lawNote?: string;
+  examTip?: string;
+}
+
+export interface LessonChapter {
+  id: string;
+  chapterNumber: number;
+  title: string;
+  summary: string;
+  estimatedMinutes: number;
+  sections: LessonSection[];
+}
+
+export interface LessonBook {
+  id: QuestionCategory;
+  title: string;
+  shortTitle: string;
+  subtitle: string;
+  emoji: string;
+  color: string;
+  examQuestionCount: number;
+  isWeaponOnly?: boolean;
+  chapters: LessonChapter[];
+}

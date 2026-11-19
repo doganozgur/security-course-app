@@ -7,6 +7,8 @@ import { ExamResultScreen } from '../screens/ExamResultScreen';
 import { MistakesScreen } from '../screens/MistakesScreen';
 import { FaqScreen } from '../screens/FaqScreen';
 import { OnboardingScreen } from '../screens/OnboardingScreen';
+import { LessonsScreen } from '../screens/LessonsScreen';
+import { LessonReaderScreen } from '../screens/LessonReaderScreen';
 import { useUser } from '../context/UserContext';
 import { useTheme } from '../context/ThemeContext';
 
@@ -47,6 +49,16 @@ export const RootNavigator = () => {
           />
           <Stack.Screen name="Mistakes" component={MistakesScreen} />
           <Stack.Screen name="Faq" component={FaqScreen} />
+          <Stack.Screen
+            name="Lessons"
+            component={LessonsScreen}
+            options={{ title: 'Dersler' }}
+          />
+          <Stack.Screen
+            name="LessonReader"
+            component={LessonReaderScreen}
+            options={{ title: 'Konu Kitabı' }}
+          />
         </>
       )}
     </Stack.Navigator>
