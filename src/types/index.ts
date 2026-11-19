@@ -116,7 +116,7 @@ export interface LessonChapter {
 }
 
 export interface LessonBook {
-  id: QuestionCategory;
+  id: string;
   title: string;
   shortTitle: string;
   subtitle: string;
