@@ -78,7 +78,7 @@ export const CATEGORIES: Record<QuestionCategory, CategoryMeta> = {
     key: 'cihazlar',
     name: 'Güvenlik Sistem ve Cihazları',
     description: 'X-Ray cihazı, el ve kapı dedektörleri, CCTV kameralar',
-    questionCountInExam: 9,
+    questionCountInExam: 5,
     icon: 'cctv',
     color: '#14B8A6',
   },

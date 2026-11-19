@@ -111,7 +111,7 @@ export const LESSONS_PART_3: LessonBook[] = [
     subtitle: 'X-Ray renk kodları, metal dedektörler, CCTV, biyometri ve çevre güvenliği',
     emoji: '📡',
     color: '#14B8A6',
-    examQuestionCount: 9,
+    examQuestionCount: 5,
     chapters: [
       {
         id: 'cihaz-1',
