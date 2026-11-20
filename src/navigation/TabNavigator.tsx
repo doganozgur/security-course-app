@@ -7,7 +7,6 @@ import { ExamsScreen } from '../screens/ExamsScreen';
 import { FlashcardsScreen } from '../screens/FlashcardsScreen';
 import { ScoreCalculatorScreen } from '../screens/ScoreCalculatorScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
-import { spacing } from '../theme/colors';
 import { useTheme } from '../context/ThemeContext';
 
 const Tab = createBottomTabNavigator();
@@ -16,22 +15,37 @@ export const TabNavigator = () => {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
 
+  const bottomPad = Math.max(insets.bottom, 8);
+
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
+        tabBarLabelPosition: 'below-icon',
+        tabBarAllowFontScaling: false,
         tabBarStyle: {
           backgroundColor: colors.card,
           borderTopColor: colors.border,
-          height: 60 + insets.bottom + 10,
-          paddingBottom: insets.bottom + 12,
-          paddingTop: spacing.sm + 2,
+          height: 58 + bottomPad,
+          paddingBottom: bottomPad,
+          paddingTop: 6,
+        },
+        tabBarItemStyle: {
+          paddingHorizontal: 2,
+          paddingVertical: 2,
+          justifyContent: 'center',
+        },
+        tabBarIconStyle: {
+          marginBottom: 2,
         },
         tabBarLabelStyle: {
           fontSize: 11,
+          lineHeight: 14,
           fontWeight: '600',
+          marginTop: 0,
+          marginBottom: 0,
         },
       }}
     >
@@ -40,7 +54,7 @@ export const TabNavigator = () => {
         component={HomeScreen}
         options={{
           tabBarLabel: 'Ana Sayfa',
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18 }}>🏠</Text>,
+          tabBarIcon: () => <Text style={{ fontSize: 18, lineHeight: 22 }}>🏠</Text>,
         }}
       />
       <Tab.Screen
@@ -48,7 +62,7 @@ export const TabNavigator = () => {
         component={ExamsScreen}
         options={{
           tabBarLabel: 'Sınavlar',
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18 }}>📝</Text>,
+          tabBarIcon: () => <Text style={{ fontSize: 18, lineHeight: 22 }}>📝</Text>,
         }}
       />
       <Tab.Screen
@@ -56,7 +70,7 @@ export const TabNavigator = () => {
         component={FlashcardsScreen}
         options={{
           tabBarLabel: 'Kartlar',
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18 }}>💡</Text>,
+          tabBarIcon: () => <Text style={{ fontSize: 18, lineHeight: 22 }}>💡</Text>,
         }}
       />
       <Tab.Screen
@@ -64,7 +78,7 @@ export const TabNavigator = () => {
         component={ScoreCalculatorScreen}
         options={{
           tabBarLabel: 'Hesapla',
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18 }}>🧮</Text>,
+          tabBarIcon: () => <Text style={{ fontSize: 18, lineHeight: 22 }}>🧮</Text>,
         }}
       />
       <Tab.Screen
@@ -72,7 +86,7 @@ export const TabNavigator = () => {
         component={ProfileScreen}
         options={{
           tabBarLabel: 'Profil',
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18 }}>👤</Text>,
+          tabBarIcon: () => <Text style={{ fontSize: 18, lineHeight: 22 }}>👤</Text>,
         }}
       />
     </Tab.Navigator>
